@@ -1,17 +1,35 @@
-from typing import Union
-
 from fastapi import FastAPI
+from enum import Enum
 
 app = FastAPI()
 
+# 路径参数无参数
+# http://127.0.0.1:8000/user/me
+@app.get("/user/me")
+async def read_me():
+    return {"me": '1'}
 
-@app.get("/")
-async def read_root():
-    return {"Hello": "World"}
+# 路径参数指定类型
+# http://127.0.0.1:8000/user/123456
+# http://127.0.0.1:8000/user/qqq
+@app.get("/user/{user_id}")
+async def read_item(user_id: int):
+    return {"user_id": user_id}
+
+# @app.get("/user/{user_id}")
+# async def read_item(user_id: str):
+#     return {"user_id": user_id}
 
 
-@app.get("/items/{item_id}")
-async def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
+# 路径参数 enum 类型
+class ModelName(str, Enum):
+    alexnet = "alexnet"
+    resnet = "resnet"
+    lenet = "lenet"
 
-# http://127.0.0.1:8000/items/5?q=somequery
+# 路径参数指定类型
+# http://127.0.0.1:8000/user_model/lenet
+# http://127.0.0.1:8000/user_model/errorModel_name
+@app.get("/user_model/{model_name}")
+async def read_item(model_name: ModelName):
+    return {"model": model_name}
